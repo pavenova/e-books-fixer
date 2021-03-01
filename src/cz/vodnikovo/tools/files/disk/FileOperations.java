@@ -1,15 +1,22 @@
-package cz.vodnikovo.tools;
+package cz.vodnikovo.tools.files.disk;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
+/**
+ * Class for operations with files on the disk
+ */
 public final class FileOperations {
     private static final String EXTENSION_SEPARATOR = ".";
 
-
+    /**
+     * Obtain the files within the specified location
+     * @param path location for content fetch
+     * @param recursive
+     * @return arraz of listed files within the given location or tree
+     */
     public static File[] getFolderFiles(String path, boolean recursive) {
 
         if (path != null && !path.isBlank()) {
@@ -22,8 +29,8 @@ public final class FileOperations {
                 if (foldersRemaining.length > 0){
                     List<File> foldersRemainingList = getFileListFromArray(foldersRemaining);
 
-                    List<File>  contentFilesList = new ArrayList<>();
-                    if (contentFiles.length>0);{
+                    List<File> contentFilesList = new ArrayList<>();
+                    if (contentFiles.length>0){
                         contentFilesList = getFileListFromArray(contentFiles);
                     }
 
@@ -39,7 +46,6 @@ public final class FileOperations {
                         counter++;
                     }while(counter <= foldersRemainingList.size()-1);
 
-
                 }
 
             }
@@ -47,6 +53,7 @@ public final class FileOperations {
             return contentFiles;
 
         } else {
+            //TODO location has not been passed
             return new File[]{};
         }
 
@@ -55,13 +62,19 @@ public final class FileOperations {
 
     }
 
+    /**
+     * Help method to merge array with existing list and returning the new list containing all the elements
+     * @param inList
+     * @param inArray
+     * @return
+     */
     private static List<File> mergeFileListArray(List<File> inList, File[] inArray){
         List<File> retList = new ArrayList<>();
 
         //copy List - immutable
         if(inList != null && inList.size() > 0){
-            for(int i=0;i<inList.size();i++){
-                retList.add(inList.get(i));
+            for (File file : inList) {
+                retList.add(file);
             }
         }
 
@@ -75,6 +88,12 @@ public final class FileOperations {
         return retList;
     }
 
+    /***
+     * Will filter existing array by file type- folders or files
+     * @param input
+     * @param type
+     * @return
+     */
     private static File[] filterFilesByType(File[] input, ESysFileType type){
         List<File> retList = new ArrayList<>();
 
@@ -89,17 +108,31 @@ public final class FileOperations {
         return getFileArrayFromList(retList);
     }
 
+    /**
+     * Return unfiltered content of the given directory
+     * @param fileLoc
+     * @return
+     */
     private static File[] getFolderContent(File fileLoc){
         File[] ret = new File[]{};
 
         if (fileLoc.isDirectory()){
             ret = fileLoc.listFiles();
         }
+        //TODO handle invalid location
+        //TODO handle location is not a folder
 
         return ret;
 
     }
 
+    /**
+     * Method to filter existing array due the parameters - include / only matching or everything else, just not given matching extensions
+     * @param inputContent
+     * @param fileExtensions
+     * @param filterMatching
+     * @return
+     */
     public static File[] getFilteredFileListByFormat(File[] inputContent,EFileFormats[] fileExtensions,boolean filterMatching){
         List<File> returnList  = new ArrayList<>();
         List<EFileFormats> formatsList = Arrays.asList(fileExtensions.clone());
@@ -121,6 +154,11 @@ public final class FileOperations {
         return getFileArrayFromList(returnList);
     }
 
+    /***
+     * Retrieve the extension of the given file
+     * @param file
+     * @return
+     */
     private static String getFileExtension(File file){
         int separatorIndex = file.getName().indexOf(EXTENSION_SEPARATOR);
 
@@ -129,15 +167,25 @@ public final class FileOperations {
             return file.getName().substring(separatorIndex+1);
         }else{
             //TODO fix if no extension
+            //TODO fix is not file
+            //TODO param null
             return null;
         }
 
     }
 
+    /**
+     * Transform list to array
+     * @param in
+     * @return
+     */
     private static File[] getFileArrayFromList(List<File> in){
         return in.toArray(new File[in.size()]);
     }
 
+    /**
+     * Transform array to list
+     */
     private static List<File> getFileListFromArray(File[] in){
         List<File> ret = new ArrayList<>();
         if (in != null && in.length > 0){
@@ -145,5 +193,4 @@ public final class FileOperations {
         }
         return ret;
     }
-
 }
