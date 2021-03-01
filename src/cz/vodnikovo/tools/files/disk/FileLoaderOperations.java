@@ -1,14 +1,12 @@
 package cz.vodnikovo.tools.files.disk;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Class for operations with files on the disk
  */
-public final class FileOperations {
+public final class FileLoaderOperations {
     private static final String EXTENSION_SEPARATOR = ".";
 
     /**
@@ -46,6 +44,7 @@ public final class FileOperations {
                         counter++;
                     }while(counter <= foldersRemainingList.size()-1);
 
+                    contentFiles = getFileArrayFromList(contentFilesList);
                 }
 
             }
@@ -56,10 +55,6 @@ public final class FileOperations {
             //TODO location has not been passed
             return new File[]{};
         }
-
-
-
-
     }
 
     /**
@@ -133,15 +128,15 @@ public final class FileOperations {
      * @param filterMatching
      * @return
      */
-    public static File[] getFilteredFileListByFormat(File[] inputContent,EFileFormats[] fileExtensions,boolean filterMatching){
+    public static File[] getFilteredFileListByFormat(File[] inputContent, EFileEbooksFormats[] fileExtensions, boolean filterMatching){
         List<File> returnList  = new ArrayList<>();
-        List<EFileFormats> formatsList = Arrays.asList(fileExtensions.clone());
+        List<EFileEbooksFormats> formatsList = Arrays.asList(fileExtensions.clone());
 
         for (File file: inputContent) {
             String fileExtension = getFileExtension(file);
 
             if (fileExtension != null){
-                EFileFormats fileFormatExtension = EFileFormats.getFromString(fileExtension);
+                EFileEbooksFormats fileFormatExtension = EFileEbooksFormats.getFromString(fileExtension);
 
                 if(filterMatching && formatsList.contains(fileFormatExtension)){
                     returnList.add(file);
@@ -154,13 +149,32 @@ public final class FileOperations {
         return getFileArrayFromList(returnList);
     }
 
+    /**
+     * Obtain unique file extensions within the given array
+     * @param input
+     * @return
+     */
+    public static String[] getUniqueExtensions(File[] input){
+        List<String> uniqueList = new ArrayList<>();
+
+        for(File f : input){
+            String extension = getFileExtension(f);
+            if(!uniqueList.contains(extension)){
+                uniqueList.add(extension);
+            }
+        }
+        Collections.sort(uniqueList);
+        return uniqueList.toArray(new String[uniqueList.size()]);
+
+    }
+
     /***
      * Retrieve the extension of the given file
      * @param file
      * @return
      */
-    private static String getFileExtension(File file){
-        int separatorIndex = file.getName().indexOf(EXTENSION_SEPARATOR);
+    public static String getFileExtension(File file){
+        int separatorIndex = file.getName().lastIndexOf(EXTENSION_SEPARATOR);
 
         if(file.isFile() && separatorIndex > 0){
             //from separator till end
@@ -179,14 +193,14 @@ public final class FileOperations {
      * @param in
      * @return
      */
-    private static File[] getFileArrayFromList(List<File> in){
+    public static File[] getFileArrayFromList(List<File> in){
         return in.toArray(new File[in.size()]);
     }
 
     /**
      * Transform array to list
      */
-    private static List<File> getFileListFromArray(File[] in){
+    public static List<File> getFileListFromArray(File[] in){
         List<File> ret = new ArrayList<>();
         if (in != null && in.length > 0){
             ret = Arrays.asList(in.clone());

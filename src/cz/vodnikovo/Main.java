@@ -1,9 +1,7 @@
 package cz.vodnikovo;
 
-import cz.vodnikovo.tools.files.disk.EFileFormats;
-import cz.vodnikovo.tools.files.disk.FileOperations;
-import cz.vodnikovo.tools.files.docs.TxtConvertor;
-import cz.vodnikovo.tools.files.docs.WordDocumentsConvertor;
+import cz.vodnikovo.tools.files.disk.FileBooksOperations;
+import cz.vodnikovo.tools.files.disk.FileLoaderOperations;
 
 import java.io.File;
 
@@ -15,6 +13,7 @@ public class Main {
         /*
         "C:\Users\xxxvo\OneDrive\Desktop\test\Procházka, Jiří Walker - Jackův konvoj.doc"
         * */
+
         String pathLoc = "C:\\Users\\xxxvo\\OneDrive\\Desktop\\test";
 
         String pathLocDOC = "C:\\Users\\xxxvo\\OneDrive\\Desktop\\test\\Procházka, Jiří Walker - Jackův konvoj.doc";
@@ -31,9 +30,9 @@ public class Main {
         File[] list;
         //list = FileOperations.getFolderContentList(pathLoc,false);
         //list = FileOperations.getFolderFiles(pathLoc,false);
-        list = FileOperations.getFolderFiles(pathLoc,true);
+        //list = FileLoaderOperations.getFolderFiles(pathLoc,true);
 
-        EFileFormats[] requestedFormats = {EFileFormats.PDB};
+        //EFileFormats[] requestedFormats = {EFileFormats.PDB};
         //list = FileOperations.getFilteredFileListByFormat(list,requestedFormats,true);
         //list = FileOperations.getFilteredFileListByFormat(list,requestedFormats,false);
 
@@ -51,6 +50,17 @@ public class Main {
         */
 
         //TxtConvertor.convertTxtToPDF(pathLocTXT,pathLocPDFTXTout);
+
+        /*
+        File[] content = FileLoaderOperations.getFolderFiles(pathLoc,true);
+        String[] extensions = FileLoaderOperations.getUniqueExtensions(content);
+        content = FileBooksOperations.filterEbooksFormats(content,true);
+        content = FileBooksOperations.filterPotentialMissingAuthors(content);
+        for(File f : content){
+            System.out.println("test!");
+        }
+        /**/
+
 
     }
 }
