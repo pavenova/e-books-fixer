@@ -2,11 +2,9 @@ package cz.vodnikovo.tools.files.docs;
 
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.*;
+import cz.vodnikovo.utils.FileObjectUtils;
 
-import java.io.BufferedReader;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * Class for txt files operations
@@ -15,25 +13,33 @@ import java.io.IOException;
 public final class TxtConvertor {
 
     /**
-     * Allows conversion of txt to PDF file
+     * Allows conversion of txt to PDF file return true on success
      */
-    public static void convertTxtToPDF(String source, String dest){
+    public static boolean convertTxtToPDF(String source, String dest){
         BufferedReader input = null;
         Document output = null;
 
-        try {
-            input = new BufferedReader (new FileReader(source));
+        File f = new File(source);
+        if(FileObjectUtils.isExistingFileNotEmpty(f)){
+            try {
+                input = new BufferedReader (new FileReader(source));
 
-            output = new Document(PageSize.LETTER, 40, 40, 40, 40);
-            PdfWriter.getInstance(output, new FileOutputStream(dest));
+                output = new Document(PageSize.LETTER, 40, 40, 40, 40);
+                PdfWriter.getInstance(output, new FileOutputStream(dest));
 
-            System.out.println("Converting : " + source);
-            writePDFfile(input, output);
-            input.close();
+                System.out.println("Converting : " + source);
+                writePDFfile(input, output);
+                input.close();
+                return true;
+            }
+            catch (Exception e) {
+                //e.printStackTrace();
+                return false;
+            }
+        }else{
+            return false;
         }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+
     }
 
     /**

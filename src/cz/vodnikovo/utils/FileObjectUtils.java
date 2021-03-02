@@ -101,4 +101,10 @@ public final class FileObjectUtils {
 
         return f.exists() && f.isFile();
     }
+
+    public static void printFileArr(File[] in){
+        for(File f : in){
+            System.out.println(f.getAbsolutePath());
+        }
+    }
 }

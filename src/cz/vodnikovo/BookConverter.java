@@ -1,8 +1,8 @@
 package cz.vodnikovo;
 
 import cz.vodnikovo.tools.files.disk.EFileEbooksFormats;
-import cz.vodnikovo.tools.files.disk.FileBooksOperations;
 import cz.vodnikovo.tools.files.disk.FileLoaderOperations;
+import cz.vodnikovo.tools.files.docs.TxtConvertor;
 import cz.vodnikovo.tools.files.docs.WordDocumentsConvertor;
 import cz.vodnikovo.utils.FileObjectUtils;
 
@@ -11,11 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class EBookConverter {
+public class BookConverter {
     private static final String  DOCEXTENSION = ".doc";
     private static final String  DOCXEXTENSION = ".docx";
 
-    private static final String  PDFXEXTENSION = ".pdf";
+    private static final String  TXTEXTENSION = ".txt";
+
+    private static final String PDFEXTENSION = ".pdf";
 
     public static File[]  loadFilesWithinTheFolder(String path, boolean recursive){
         return FileLoaderOperations.getFolderFiles(path, recursive);
@@ -30,9 +32,22 @@ public class EBookConverter {
 
         for(File f : source){
             if(WordDocumentsConvertor.isSupportedWordDoc(f.getAbsolutePath())){
-                String destPath = getDestPdfPath(f);
+                String destPath = getDestPdfPath(f,EBookSWFormat.WORD);
 
                 WordDocumentsConvertor.convertDocToPDF(f.getAbsolutePath(),destPath);
+                converted.add(f);
+            }
+        }
+
+        return FileObjectUtils.getFileArrayFromList(converted);
+    }
+
+    public static File[] convertTxtToPDF(File[] in){
+        List<File> converted = new ArrayList<>();
+
+        for (File f : in){
+            System.out.println("Converting: " + f.getAbsolutePath());
+            if(TxtConvertor.convertTxtToPDF(f.getAbsolutePath(),getDestPdfPath(f,EBookSWFormat.TXT))){
                 converted.add(f);
             }
         }
@@ -57,18 +72,35 @@ public class EBookConverter {
      * @param f source file
      * @return
      */
-    private static String getDestPdfPath(File f) {
+    private static String getDestPdfPath(File f,EBookSWFormat sourceFormat) {
         String fileAbsPath  = f.getAbsolutePath();
-        String destPdfPath = f.getAbsolutePath();
 
-        String foundExtension = getFindWordExtension(fileAbsPath);
-        destPdfPath = fileAbsPath.replace(foundExtension,EBookConverter.PDFXEXTENSION.toLowerCase());
+        String foundExtension = "";
 
-        return destPdfPath;
+        switch (sourceFormat){
+            case WORD:
+                foundExtension = getFindWordExtension(fileAbsPath);
+                return  fileAbsPath.replace(foundExtension, BookConverter.PDFEXTENSION.toLowerCase());
+            case TXT:
+                foundExtension= getFindTxtExtension(fileAbsPath);
+                return fileAbsPath.replace(foundExtension,BookConverter.PDFEXTENSION);
+        }
+
+        return null;
     }
 
+    private static String getFindTxtExtension(String fileAbsolutePath){
+        if(fileAbsolutePath.endsWith(TXTEXTENSION.toLowerCase()))
+            return TXTEXTENSION.toLowerCase();
+        else if(fileAbsolutePath.endsWith(TXTEXTENSION.toUpperCase()))
+            return TXTEXTENSION.toUpperCase();
+
+        //TODO no txt, TXT found
+        return null;
+
+    }
     private static String getFindWordExtension(String fileAbsolutePath){
-        if(fileAbsolutePath.endsWith(EBookConverter.DOCEXTENSION.toLowerCase())){
+        if(fileAbsolutePath.endsWith(BookConverter.DOCEXTENSION.toLowerCase())){
             return DOCEXTENSION.toLowerCase();
         }else if(fileAbsolutePath.endsWith(DOCEXTENSION.toUpperCase())){
             return DOCEXTENSION.toUpperCase();
