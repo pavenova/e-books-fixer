@@ -1,7 +1,6 @@
 package cz.vodnikovo;
 
-import cz.vodnikovo.tools.files.disk.FileBooksOperations;
-import cz.vodnikovo.tools.files.disk.FileLoaderOperations;
+import cz.vodnikovo.tools.files.disk.EFileEbooksFormats;
 
 import java.io.File;
 
@@ -9,58 +8,42 @@ public class Main {
 
     public static void main(String[] args) {
 	    //String pathLoc = "C:\\Users\\xxxvo\\OneDrive\\Desktop\\E-books\\Knihy abecedně";
-        //String pathLoc = "C:\\Users\\xxxvo\\OneDrive\\Desktop\\E-books\\Knihy abecedně\\P\\Pratchett, Terry";
-        /*
-        "C:\Users\xxxvo\OneDrive\Desktop\test\Procházka, Jiří Walker - Jackův konvoj.doc"
-        * */
-
         String pathLoc = "C:\\Users\\xxxvo\\OneDrive\\Desktop\\test";
+        String splitter = " ------------------------------- ";
 
-        String pathLocDOC = "C:\\Users\\xxxvo\\OneDrive\\Desktop\\test\\Procházka, Jiří Walker - Jackův konvoj.doc";
-        String pathLocPDFout = "C:\\Users\\xxxvo\\OneDrive\\Desktop\\test\\Procházka, Jiří Walker - Jackův konvoj.pdf";
+        //LOAD data - files
+        File[] sourceData = EBookConverter.loadFilesWithinTheFolder(pathLoc,true);
+        System.out.println("Found files:");
+        printFileArr(sourceData);
+        printEndMessage("Found documents");
 
-        String pathLocDOCX = "C:\\Users\\xxxvo\\OneDrive\\Desktop\\test\\Procházka, Jiří Walker - Jackův konvoj.docx";
-        String pathLocPDFXout = "C:\\Users\\xxxvo\\OneDrive\\Desktop\\test\\Procházka, Jiří Walker - Jackův konvoj.x.pdf";
+        System.out.println(splitter);
 
-        String pathLocTXT = "C:\\Users\\xxxvo\\OneDrive\\Desktop\\test\\foooo.txt";
-        String pathLocPDFTXTout = "C:\\Users\\xxxvo\\OneDrive\\Desktop\\test\\foooo.txt.pdf";
+        //FILTER doc, docx
+        EFileEbooksFormats[] wordFormats = {EFileEbooksFormats.DOCX,EFileEbooksFormats.DOC};
+        File[] wordArray = EBookConverter.filterFilesByExtensionFormat(sourceData,wordFormats,true);
+        System.out.println("Filtered word documents (doc, docx):");
+        printFileArr(wordArray);
+        printEndMessage("Filtered word documents (doc, docx)");
 
+        System.out.println(splitter);
 
+        //transform doc, docx to PDF
+        File[] wordPDFConverted= EBookConverter.convertDocToPDF(wordArray);
+        File[] deletedFiles = EBookConverter.deleteFiles(wordPDFConverted);
 
-        File[] list;
-        //list = FileOperations.getFolderContentList(pathLoc,false);
-        //list = FileOperations.getFolderFiles(pathLoc,false);
-        //list = FileLoaderOperations.getFolderFiles(pathLoc,true);
+        System.out.println("deleted files: ");
+        printFileArr(deletedFiles);
+        printEndMessage("deleted files");
+    }
 
-        //EFileFormats[] requestedFormats = {EFileFormats.PDB};
-        //list = FileOperations.getFilteredFileListByFormat(list,requestedFormats,true);
-        //list = FileOperations.getFilteredFileListByFormat(list,requestedFormats,false);
-
-        //test
-        /*
-
-        for (File file: list) {
-            System.out.println(file.getName() + " , at: " + file.getAbsolutePath());
-        }*/
-
-        /*
-        WordDocumentsConvertor conv = new WordDocumentsConvertor();
-        conv.convertDocToPDF(pathLocDOC,pathLocPDFout);
-        conv.convertDocToPDF(pathLocDOCX,pathLocPDFXout);
-        */
-
-        //TxtConvertor.convertTxtToPDF(pathLocTXT,pathLocPDFTXTout);
-
-        /*
-        File[] content = FileLoaderOperations.getFolderFiles(pathLoc,true);
-        String[] extensions = FileLoaderOperations.getUniqueExtensions(content);
-        content = FileBooksOperations.filterEbooksFormats(content,true);
-        content = FileBooksOperations.filterPotentialMissingAuthors(content);
-        for(File f : content){
-            System.out.println("test!");
+    private static void printFileArr(File[] in){
+        for(File f : in){
+            System.out.println(f.getAbsolutePath());
         }
-        /**/
+    }
 
-
+    private static void printEndMessage(String text){
+        System.out.println("== " + text + " END ==");
     }
 }

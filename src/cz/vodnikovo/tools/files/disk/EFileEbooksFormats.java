@@ -1,7 +1,7 @@
 package cz.vodnikovo.tools.files.disk;
 
 public enum EFileEbooksFormats {
-    PDF,PDB,EPUB,MOBI,DOC,DOX,TXT;
+    PDF,PDB,EPUB,MOBI,DOC,DOCX,TXT;
 
     public static EFileEbooksFormats getFromString(String stringValue){
         for(EFileEbooksFormats format : EFileEbooksFormats.values()){

@@ -1,6 +1,8 @@
 package cz.vodnikovo.tools.files.docs;
 
 import cz.vodnikovo.tools.SystemTools;
+import cz.vodnikovo.utils.FileObjectUtils;
+
 import java.io.File;
 
 /***
@@ -15,7 +17,7 @@ public class WordDocumentsConvertor {
      * @param sourceLocation
      * @param destLocation
      */
-    public void convertDocToPDF(String sourceLocation, String destLocation) {
+    public static void convertDocToPDF(String sourceLocation, String destLocation) {
         if (isSupportedWordDoc(sourceLocation)) {
             if (SystemTools.isWindowsPlatform()) {
 
@@ -42,7 +44,7 @@ public class WordDocumentsConvertor {
         sb.append(OFFICE2PDFLOCATION);
         sb.append(" \"");
         sb.append(sourceLocation);
-        sb.append("\" \"");
+        sb.append("\" \""); // quote, space, quote
         sb.append(destLocation);
         sb.append("\"");
         return sb;
@@ -55,7 +57,11 @@ public class WordDocumentsConvertor {
      */
     public static boolean isSupportedWordDoc(String path) {
         File source = new File(path);
-        return (source.exists() && source.isFile() && (source.getName().endsWith("doc") || source.getName().endsWith("docx")));
+        boolean isFileExist =source.exists() && source.isFile() ;
+        boolean isTypeSupported = source.getName().endsWith("doc") || source.getName().endsWith("docx") || source.getName().endsWith("doc".toUpperCase()) || source.getName().endsWith("docx".toUpperCase()) ;
+        boolean isNotEmpty = FileObjectUtils.isExistingFileNotEmpty(source);
+
+        return isFileExist && isTypeSupported && isNotEmpty;
     }
 
 }

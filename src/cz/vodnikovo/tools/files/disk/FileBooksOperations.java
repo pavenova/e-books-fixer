@@ -1,5 +1,7 @@
 package cz.vodnikovo.tools.files.disk;
 
+import cz.vodnikovo.utils.FileObjectUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -16,7 +18,7 @@ public final class FileBooksOperations {
     private static final String WORDLISTPATHBASE ="src\\cz\\vodnikovo\\resources\\3rdparty\\names-list.txt";
 
     /**
-     * Filter potencial ebooks / file formats
+     * Filter potential ebooks / file formats
      * @param sourceData
      * @param matching
      * @return
@@ -35,13 +37,13 @@ public final class FileBooksOperations {
 
         if(source != null && source.length > 0){
             for(File f : source){
-                if(isMissingAuthorCandidate(f)){
+                if(isAuthorMissingCandidate(f)){
                     retList.add(f);
                 }
             }
         }
 
-        return FileLoaderOperations.getFileArrayFromList(retList);
+        return FileObjectUtils.getFileArrayFromList(retList);
     }
 
     /**
@@ -49,7 +51,7 @@ public final class FileBooksOperations {
      * @param f
      * @return
      */
-    private static boolean isMissingAuthorCandidate(File f){
+    private static boolean isAuthorMissingCandidate(File f){
         if(f.isFile() && f.exists()){
 
             if(f.getName().split(EXPECTED_AUTHORTITLE_SEPARATOR.toString()).length == 1){
@@ -102,6 +104,69 @@ public final class FileBooksOperations {
     }
 
     //incorrect author format
+    public static File[] filterPotentiallyIncorrectAuthorFormat(File[] source){
+        List<File> retList  = new ArrayList<>();
+
+        if(source != null && source.length > 0){
+            for(File f : source){
+                if(isAuthorInvalidFormatCandidate(f)){
+                    retList.add(f);
+                }
+            }
+        }
+
+        return FileObjectUtils.getFileArrayFromList(retList);
+    }
+
+    public static File[] getContainDiacritics(File[] in){
+        List<File> retList  = new ArrayList<>();
+
+        if(in != null && in.length > 0){
+            for(File f : in){
+                if(isFileNameContainingDiacritics(f)){
+                    retList.add(f);
+                }
+            }
+        }
+
+        return FileObjectUtils.getFileArrayFromList(retList);
+
+    }
+
+    /**
+     * Will mark potential candidate with author in invalid format
+     * @param f
+     * @return
+     */
+    private static boolean isAuthorInvalidFormatCandidate(File f){
+        String fName = f.getName();
+        String[] tokens = fName.split(EXPECTED_AUTHORTITLE_SEPARATOR.toString());
+        if(tokens == null || tokens.length < 2 || tokens[0].split(EXPECTED_AUTHORNAME_SEPARATOR.toString()).length < 2){
+            return true;
+        }
+
+        String separatorWrappedBySpaces = " " + EXPECTED_AUTHORNAME_SEPARATOR + " ";
+        if(tokens[0].split(separatorWrappedBySpaces).length < 2){
+            return true;
+        }
+
+        return false;
+    }
+
+    private static boolean isFileNameContainingDiacritics(File f){
+        if(f.exists() && f.isFile()){
+            String name = f.getName();
+
+            EDiacriticsChars[] invalidChars = EDiacriticsChars.values();
+            for(EDiacriticsChars c : invalidChars){
+                if(name.contains(c.name())){
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
     //diacritics
     //incorrect format - underscores, 2 followed spaces
     //incorrect format - minor - space around dash,etc..

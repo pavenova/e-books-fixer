@@ -1,5 +1,7 @@
 package cz.vodnikovo.tools.files.disk;
 
+import cz.vodnikovo.utils.FileObjectUtils;
+
 import java.io.File;
 import java.util.*;
 
@@ -7,13 +9,12 @@ import java.util.*;
  * Class for operations with files on the disk
  */
 public final class FileLoaderOperations {
-    private static final String EXTENSION_SEPARATOR = ".";
 
     /**
      * Obtain the files within the specified location
      * @param path location for content fetch
      * @param recursive
-     * @return arraz of listed files within the given location or tree
+     * @return array of listed files within the given location or tree
      */
     public static File[] getFolderFiles(String path, boolean recursive) {
 
@@ -25,11 +26,11 @@ public final class FileLoaderOperations {
                 File[] foldersRemaining = filterFilesByType(content,ESysFileType.FOLDER);
 
                 if (foldersRemaining.length > 0){
-                    List<File> foldersRemainingList = getFileListFromArray(foldersRemaining);
+                    List<File> foldersRemainingList = FileObjectUtils.getFileListFromArray(foldersRemaining);
 
                     List<File> contentFilesList = new ArrayList<>();
                     if (contentFiles.length>0){
-                        contentFilesList = getFileListFromArray(contentFiles);
+                        contentFilesList = FileObjectUtils.getFileListFromArray(contentFiles);
                     }
 
                     int counter= 0;
@@ -44,7 +45,7 @@ public final class FileLoaderOperations {
                         counter++;
                     }while(counter <= foldersRemainingList.size()-1);
 
-                    contentFiles = getFileArrayFromList(contentFilesList);
+                    contentFiles = FileObjectUtils.getFileArrayFromList(contentFilesList);
                 }
 
             }
@@ -100,7 +101,7 @@ public final class FileLoaderOperations {
             }
         }
 
-        return getFileArrayFromList(retList);
+        return FileObjectUtils.getFileArrayFromList(retList);
     }
 
     /**
@@ -133,7 +134,7 @@ public final class FileLoaderOperations {
         List<EFileEbooksFormats> formatsList = Arrays.asList(fileExtensions.clone());
 
         for (File file: inputContent) {
-            String fileExtension = getFileExtension(file);
+            String fileExtension = FileObjectUtils.getFileExtension(file);
 
             if (fileExtension != null){
                 EFileEbooksFormats fileFormatExtension = EFileEbooksFormats.getFromString(fileExtension);
@@ -146,65 +147,7 @@ public final class FileLoaderOperations {
             }
 
         }
-        return getFileArrayFromList(returnList);
+        return FileObjectUtils.getFileArrayFromList(returnList);
     }
 
-    /**
-     * Obtain unique file extensions within the given array
-     * @param input
-     * @return
-     */
-    public static String[] getUniqueExtensions(File[] input){
-        List<String> uniqueList = new ArrayList<>();
-
-        for(File f : input){
-            String extension = getFileExtension(f);
-            if(!uniqueList.contains(extension)){
-                uniqueList.add(extension);
-            }
-        }
-        Collections.sort(uniqueList);
-        return uniqueList.toArray(new String[uniqueList.size()]);
-
-    }
-
-    /***
-     * Retrieve the extension of the given file
-     * @param file
-     * @return
-     */
-    public static String getFileExtension(File file){
-        int separatorIndex = file.getName().lastIndexOf(EXTENSION_SEPARATOR);
-
-        if(file.isFile() && separatorIndex > 0){
-            //from separator till end
-            return file.getName().substring(separatorIndex+1);
-        }else{
-            //TODO fix if no extension
-            //TODO fix is not file
-            //TODO param null
-            return null;
-        }
-
-    }
-
-    /**
-     * Transform list to array
-     * @param in
-     * @return
-     */
-    public static File[] getFileArrayFromList(List<File> in){
-        return in.toArray(new File[in.size()]);
-    }
-
-    /**
-     * Transform array to list
-     */
-    public static List<File> getFileListFromArray(File[] in){
-        List<File> ret = new ArrayList<>();
-        if (in != null && in.length > 0){
-            ret = Arrays.asList(in.clone());
-        }
-        return ret;
-    }
 }
