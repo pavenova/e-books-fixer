@@ -17,6 +17,8 @@ public class BookConverter {
 
     private static final String  TXTEXTENSION = ".txt";
 
+    private static final String  RTFEXTENSION = ".rtf";
+
     private static final String PDFEXTENSION = ".pdf";
 
     public static File[]  loadFilesWithinTheFolder(String path, boolean recursive){
@@ -67,6 +69,12 @@ public class BookConverter {
         return FileObjectUtils.getFileArrayFromList(deleted);
     }
 
+    public static void logFileArrayToFile(String path, File[] content){
+        if(FileObjectUtils.logArrayToFile(path,content)){
+            System.out.println("wrote " + path);
+        }
+    }
+
     /**
      * Retrieve the destination path (incl. extension) for PDF
      * @param f source file
@@ -80,9 +88,12 @@ public class BookConverter {
         switch (sourceFormat){
             case WORD:
                 foundExtension = getFindWordExtension(fileAbsPath);
-                return  fileAbsPath.replace(foundExtension, BookConverter.PDFEXTENSION.toLowerCase());
+                return  fileAbsPath.replace(foundExtension, BookConverter.PDFEXTENSION);
             case TXT:
                 foundExtension= getFindTxtExtension(fileAbsPath);
+                return fileAbsPath.replace(foundExtension,BookConverter.PDFEXTENSION);
+            case RTF:
+                foundExtension= getFindRtfExtension(fileAbsPath);
                 return fileAbsPath.replace(foundExtension,BookConverter.PDFEXTENSION);
         }
 
@@ -111,6 +122,16 @@ public class BookConverter {
         }
 
         //TODO no doc docx found
+        return null;
+    }
+
+    private static String getFindRtfExtension(String fileAbsolutePath){
+        if(fileAbsolutePath.endsWith(BookConverter.RTFEXTENSION.toLowerCase())){
+            return RTFEXTENSION.toLowerCase();
+        }else if(fileAbsolutePath.endsWith(RTFEXTENSION.toUpperCase())){
+            return RTFEXTENSION.toUpperCase();
+        }
+        //TODO
         return null;
     }
 

@@ -1,7 +1,6 @@
 package cz.vodnikovo.utils;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -102,9 +101,48 @@ public final class FileObjectUtils {
         return f.exists() && f.isFile();
     }
 
+    public static boolean hasOneOfExtensions(File f, String[] allowedExtArray){
+        for(String s : allowedExtArray){
+            String fileExtension = getFileExtension(f);
+            if(fileExtension.equalsIgnoreCase(s)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static void printFileArr(File[] in){
         for(File f : in){
             System.out.println(f.getAbsolutePath());
         }
+    }
+
+    public static boolean logArrayToFile(String location, File[] data){
+        File target = new File(location);
+
+        try {
+            if(!target.exists()){
+                target.createNewFile();
+            }
+
+            PrintWriter writer =  new PrintWriter(location, "UTF-8");
+            for(File f : data){
+                writer.write(f.getAbsolutePath() + "\n");
+            }
+            writer.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
     }
 }

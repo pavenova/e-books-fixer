@@ -12,6 +12,8 @@ public class WordDocumentsConvertor {
     private final static String OFFICE2PDFLOCATION = "src\\cz\\vodnikovo\\resources\\3rdparty\\OfficeToPDF.exe";
     private final static String CMDSTARTCOMMAND = "cmd /c";
 
+    private static final String[] SUPPORTEDFORMATS = {"doc","docx","rtf"};
+
     /**
      * Convert doc or docx to PDF
      * @param sourceLocation
@@ -57,11 +59,10 @@ public class WordDocumentsConvertor {
      */
     public static boolean isSupportedWordDoc(String path) {
         File source = new File(path);
-        boolean isFileExist =source.exists() && source.isFile() ;
-        boolean isTypeSupported = source.getName().endsWith("doc") || source.getName().endsWith("docx") || source.getName().endsWith("doc".toUpperCase()) || source.getName().endsWith("docx".toUpperCase()) ;
-        boolean isNotEmpty = FileObjectUtils.isExistingFileNotEmpty(source);
+        boolean isFileExistNonEmpty =FileObjectUtils.isExistingFileNotEmpty(source);
+        boolean isTypeSupported = FileObjectUtils.hasOneOfExtensions(source,SUPPORTEDFORMATS);
 
-        return isFileExist && isTypeSupported && isNotEmpty;
+        return isFileExistNonEmpty && isTypeSupported;
     }
 
 }

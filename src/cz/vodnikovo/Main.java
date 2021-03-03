@@ -1,79 +1,56 @@
 package cz.vodnikovo;
 
 import cz.vodnikovo.tools.files.disk.EFileEbooksFormats;
+import cz.vodnikovo.tools.files.docs.WordDocumentsConvertor;
 import cz.vodnikovo.utils.FileObjectUtils;
 
 import java.io.File;
 
 public class Main {
     private static final boolean VERBOSE = true;
-    private static final boolean CONVERTWORDDOCS = true;
+
+    private static final boolean CONVERTWORD = true;
     private static final boolean CONVERTTXT = true;
 
     public static void main(String[] args) {
-	    //String pathLoc = "C:\\Users\\xxxvo\\OneDrive\\Desktop\\E-books\\Knihy abecedně";
+        //String pathLoc = "C:\\Users\\xxxvo\\OneDrive\\Desktop\\E-books\\Knihy abecedně";
         String pathLoc = "C:\\Users\\xxxvo\\OneDrive\\Desktop\\test";
-        String splitter = " ------------------------------- ";
 
-        //LOAD data - files
+        String logBase = "C:\\Users\\xxxvo\\OneDrive\\Desktop\\test-log";
+
+           //LOAD data - files
         File[] sourceData = BookConverter.loadFilesWithinTheFolder(pathLoc,true);
-        System.out.println("Found files:");
-        printFileArr(sourceData);
-        printEndMessage("Found documents");
+        BookConverter.logFileArrayToFile(logBase+"\\data-base.txt",sourceData);
 
-        System.out.println(splitter);
-
-        if(CONVERTWORDDOCS){
+        if(CONVERTWORD){
             //FILTER doc, docx
             EFileEbooksFormats[] wordFormats = {EFileEbooksFormats.DOCX,EFileEbooksFormats.DOC};
-            File[] wordArray = BookConverter.filterFilesByExtensionFormat(sourceData,wordFormats,true);
-            System.out.println("Filtered word documents (doc, docx):");
-            printFileArr(wordArray);
-            printEndMessage("Filtered word documents (doc, docx)");
 
-            System.out.println(splitter);
+            File[] wordArray = BookConverter.filterFilesByExtensionFormat(sourceData,wordFormats,true);
+            BookConverter.logFileArrayToFile(logBase+"\\data-word.txt",wordArray);
 
             //transform doc, docx to PDF
             File[] wordPDFConverted= BookConverter.convertDocToPDF(wordArray);
             File[] deletedFiles = BookConverter.deleteFiles(wordPDFConverted);
-
-            //clean converted
-            System.out.println("deleted files: ");
-            printFileArr(deletedFiles);
-            printEndMessage("deleted files");
+            BookConverter.logFileArrayToFile(logBase+"\\data-word-deleted.txt",deletedFiles);
         }
 
         if(CONVERTTXT){
             EFileEbooksFormats[] txtFormats = {EFileEbooksFormats.TXT};
-
             //filter txt files
             File[] txtArray = BookConverter.filterFilesByExtensionFormat(sourceData,txtFormats,true);
-
-            System.out.println("Found TXTs: " );
-            printFileArr(txtArray);
-            printEndMessage("Found TXT");
-            System.out.println(splitter);
+            BookConverter.logFileArrayToFile(logBase+"\\data-txt.txt",txtArray);
 
             //transform txt to PDF if possible
             File[] txtPDFConverted = BookConverter.convertTxtToPDF(txtArray);
             File[] deletedFiles = BookConverter.deleteFiles(txtPDFConverted);
-
-            System.out.println("Deleted (txt): ");
-            printFileArr(deletedFiles);
-            printEndMessage("Deleted (txt)");
+            BookConverter.logFileArrayToFile(logBase+"\\data-txt-deleted.txt",deletedFiles);
         }
 
 
 
     }
 
-    private static void printFileArr(File[] in){
-        if(VERBOSE){
-            FileObjectUtils.printFileArr(in);
-        }
-    }
 
-    private static void printEndMessage(String text){
-        System.out.println("== " + text + " END ==");
-    }
+
 }

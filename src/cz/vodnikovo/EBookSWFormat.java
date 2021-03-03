@@ -1,5 +1,5 @@
 package cz.vodnikovo;
 
 public enum EBookSWFormat {
-    WORD,TXT;
+    WORD,TXT,RTF;
 }
