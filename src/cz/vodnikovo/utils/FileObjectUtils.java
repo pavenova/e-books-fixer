@@ -92,13 +92,15 @@ public final class FileObjectUtils {
 
         try {
             long bytesSize = Files.size(fPath);
+
             if(bytesSize > 0) nonEmpty=true;
         } catch (IOException e) {
             //e.printStackTrace();
             //TODO lets assume nonempty
+            nonEmpty = true;
         }
 
-        return f.exists() && f.isFile();
+        return f.exists() && f.isFile() && nonEmpty;
     }
 
     public static boolean hasOneOfExtensions(File f, String[] allowedExtArray){
